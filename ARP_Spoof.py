@@ -1,1 +1,5 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
+
+import scapy.all as scapy
+
+packet = scapy.ARP()

